@@ -5,7 +5,7 @@ export default class Example extends Component {
 
     componentDidMount() {
         fetch('/api/test', {
-            method: 'POST'
+            method: 'GET'
         })
           .then(response => response.json())
           .then(jsonResponse => console.log(jsonResponse))

@@ -8,9 +8,7 @@ class TestController extends Controller
 {
 
     public function index() {
-        return response()->json([
-            "index"
-        ]);
+        return ['index'];
     }
 
     public function store() {

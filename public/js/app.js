@@ -36188,7 +36188,7 @@ var Example = function (_Component) {
         key: 'componentDidMount',
         value: function componentDidMount() {
             fetch('/api/test', {
-                method: 'POST'
+                method: 'GET'
             }).then(function (response) {
                 return response.json();
             }).then(function (jsonResponse) {
