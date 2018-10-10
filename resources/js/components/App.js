@@ -2,6 +2,16 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 export default class Example extends Component {
+
+    componentDidMount() {
+        fetch('/api/test', {
+            method: 'POST'
+        })
+          .then(response => response.json())
+          .then(jsonResponse => console.log(jsonResponse))
+          .catch(e => console.log(e));
+    }
+
     render() {
         return (
             <div className="container">

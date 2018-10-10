@@ -36185,6 +36185,19 @@ var Example = function (_Component) {
     }
 
     _createClass(Example, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            fetch('/api/test', {
+                method: 'POST'
+            }).then(function (response) {
+                return response.json();
+            }).then(function (jsonResponse) {
+                return console.log(jsonResponse);
+            }).catch(function (e) {
+                return console.log(e);
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
