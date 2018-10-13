@@ -1,4 +1,14 @@
+/**
+ *
+ */
+
 import React, { Component } from 'react';
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 export default class Teams extends Component {
 
@@ -22,7 +32,6 @@ export default class Teams extends Component {
 
     render() {
 
-        console.log(this.state);
         if(this.state.isLoading) {
             return(
                 <div>
@@ -35,26 +44,23 @@ export default class Teams extends Component {
         if(this.state.teams) {
             for(let team of this.state.teams) {
                 teams.push(
-                    <div key={team.id}>
-                        <p>{team.name}</p>
-                    </div>
+                    <TableRow key={team.id}>
+                        <TableCell>{team.name}</TableCell>
+                    </TableRow>
                 );
             }
         }
         return (
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <div className="card">
-                            <div className="card-header">Alle Teams</div>
-
-                            <div className="card-body">
-                                {teams}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Name</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {teams}
+                </TableBody>
+            </Table>
         );
     }
 }

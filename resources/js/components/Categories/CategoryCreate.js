@@ -4,6 +4,7 @@
 
 import React, { Component } from 'react';
 import { Link, Redirect } from "react-router-dom";
+import TextField from '@material-ui/core/TextField';
 
 export default class CategoryCreate extends Component {
 
@@ -30,27 +31,31 @@ export default class CategoryCreate extends Component {
     }
 
     handleSubmit(event) {
-        fetch('/api/categories', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: this.state.name,
-                start: this.state.start
+        if(this.state.name && this.state.start) {
+            fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: this.state.name,
+                    start: this.state.start
+                })
             })
-        })
-            .then(response => response.json())
-            .then(jsonResponse => {
+                .then(response => response.json())
+                .then(jsonResponse => {
 
-                if(jsonResponse === 1) {
-                    console.log(jsonResponse);
-                    this.setState({redirect: true});
-                }
-            })
-            .catch(e => console.log(e));
+                    if(jsonResponse === 1) {
+                        console.log(jsonResponse);
+                        this.setState({redirect: true});
+                    }
+                })
+                .catch(e => console.log(e));
 
+        } else {
+            console.log("notsend", this.state);
+        }
         event.preventDefault();
     }
 
@@ -60,6 +65,16 @@ export default class CategoryCreate extends Component {
             return <Redirect to="/category/list" />;
         }
 
+        console.log(this.state);
+
+        /*
+        <form onSubmit={this.handleSubmit}>
+            <TextField hintText="Name" fullWidth={true} onChange={this.changeName} />
+            <TextField hintText="Start Datetime" fullWidth={true} onChange={this.changeStart} />
+            <RaisedButton label="Primary" primary={true} onClick={this.handleSubmit} style={{marginTop: 12}} />
+        </form>
+        */
+
         return (
             <div className="container">
                 <div className="row justify-content-center">
@@ -67,17 +82,7 @@ export default class CategoryCreate extends Component {
                         <div className="card">
                             <div className="card-header">Kategorie erstellen</div>
                             <div className="card-body">
-                                <form onSubmit={this.handleSubmit}>
-                                    <label>
-                                        Name:
-                                        <input type="text" value={this.state.value} onChange={this.changeName} />
-                                    </label>
-                                    <label>
-                                        Start Datetime:
-                                        <input type="text" value={this.state.value} onChange={this.changeStart} />
-                                    </label>
-                                    <input type="submit" value="Submit" />
-                                </form>
+
                             </div>
                         </div>
                     </div>

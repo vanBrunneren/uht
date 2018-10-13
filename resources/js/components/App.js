@@ -2,7 +2,7 @@
  *
  */
 
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {
     BrowserRouter as Router,
@@ -10,37 +10,81 @@ import {
     Link
 } from "react-router-dom";
 
-import Teams from './Teams';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import AppBar from '@material-ui/core/AppBar';
+import Drawer from '@material-ui/core/Drawer';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
+import Teams from './Teams/Teams';
 import CategoryList from './Categories/CategoryList';
 import CategoryCreate from './Categories/CategoryCreate';
 
-const App = () => (
-  <Router>
-    <div>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/teams">Teams</Link>
-        </li>
-        <li>
-          <Link to="/category/list">Kategorien anzeigen</Link>
-        </li>
-      </ul>
+const styles = {
+    title: {
+        cursor: 'pointer',
+    },
+};
 
-      <hr />
+export default class App extends Component {
 
-      <Route path="/teams" component={Teams} />
-      <Route path="/category/list" component={CategoryList} />
-      <Route path="/category/create" component={CategoryCreate} />
+    constructor(props) {
+        super(props);
+        this.state = {open: false};
+    }
 
-    </div>
-  </Router>
-);
-export default App;
+    handleToggle() {
+        this.setState({open: !this.state.open});
+    }
 
-if (document.getElementById('app')) {
-    ReactDOM.render(<App />, document.getElementById('app'));
+    handleClose() {
+        this.setState({open: false});
+    }
+
+    handleClick() {
+        alert('onClick triggered on the title component');
+    }
+
+    render() {
+
+        return(
+            <Router>
+                <div>
+                    <AppBar title="Menü" position="relative" color="primary">
+                        <Toolbar>
+                            <IconButton color="inherit" aria-label="Menu" onClick={() => this.handleToggle()}>
+                                <MenuIcon />
+                            </IconButton>
+                            <Typography variant="h6" color="inherit">
+                                Unihockey Turnier Brunegg
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                    <Drawer
+                        onClose={() => this.handleToggle()}
+                        open={this.state.open}>
+
+                        <MenuItem onClick={this.handleClose.bind(this)}>Kategorie erstellen</MenuItem>
+                        <MenuItem onClick={this.handleClose.bind(this)}>Kategorien anzeigen</MenuItem>
+                        <MenuItem onClick={this.handleClose.bind(this)}>Teams</MenuItem>
+                        
+                    </Drawer>
+                    <Route path="/teams" component={Teams} />
+                    <Route path="/category/list" component={CategoryList} />
+                    <Route path="/category/create" component={CategoryCreate} />
+                </div>
+            </Router>
+        );
+    }
+
 }
+
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('app')
+);

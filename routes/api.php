@@ -17,5 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('teams', 'API\TeamController');
-Route::resource('categories', 'API\CategoryController');
+Route::get('teams/list/{list}', 'API\TeamController@list')->where('list', 'all|[0-9]+');
+Route::apiResource('teams', 'API\TeamController')->except(['store', 'update']);
+
+Route::apiResource('categories', 'API\CategoryController');
