@@ -17,5 +17,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('test', 'TestController@index');
-Route::post('test', 'TestController@store');
+Route::resource('teams', 'API\TeamController');
+Route::resource('categories', 'API\CategoryController');

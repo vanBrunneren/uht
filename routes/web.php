@@ -11,4 +11,7 @@
 |
 */
 
-Route::view('/{path?}', 'app');
+//Route::view('/{path?}', 'app');
+Route::get( '{any}', function () {
+    return view('app'); // or wherever your React app is bootstrapped.
+})->where('any', '.*');

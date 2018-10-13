@@ -1,36 +1,46 @@
-import React, { Component } from 'react';
+/**
+ *
+ */
+
+import React from 'react';
 import ReactDOM from 'react-dom';
+import {
+    BrowserRouter as Router,
+    Route,
+    Link
+} from "react-router-dom";
 
-export default class Example extends Component {
+import Teams from './Teams';
 
-    componentDidMount() {
-        fetch('/api/test', {
-            method: 'GET'
-        })
-          .then(response => response.json())
-          .then(jsonResponse => console.log(jsonResponse))
-          .catch(e => console.log(e));
-    }
+import CategoryList from './Categories/CategoryList';
+import CategoryCreate from './Categories/CategoryCreate';
 
-    render() {
-        return (
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <div className="card">
-                            <div className="card-header">Example Component</div>
+const App = () => (
+  <Router>
+    <div>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/teams">Teams</Link>
+        </li>
+        <li>
+          <Link to="/category/list">Kategorien anzeigen</Link>
+        </li>
+      </ul>
 
-                            <div className="card-body">
-                                I'm an example component!
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-}
+      <hr />
+
+      <Route path="/teams" component={Teams} />
+      <Route path="/category/list" component={CategoryList} />
+      <Route path="/category/create" component={CategoryCreate} />
+
+    </div>
+  </Router>
+);
+export default App;
 
 if (document.getElementById('app')) {
-    ReactDOM.render(<Example />, document.getElementById('app'));
+    ReactDOM.render(<App />, document.getElementById('app'));
 }
