@@ -65,7 +65,6 @@ export default class CategoryCreate extends Component {
             return <Redirect to="/category/list" />;
         }
 
-        console.log(this.state);
 
         /*
         <form onSubmit={this.handleSubmit}>

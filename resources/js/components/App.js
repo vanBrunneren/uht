@@ -10,6 +10,8 @@ import {
     Link
 } from "react-router-dom";
 
+import 'typeface-roboto';
+
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
@@ -34,7 +36,9 @@ export default class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {open: false};
+        this.state = {
+            open: false
+        };
     }
 
     handleToggle() {
@@ -67,11 +71,9 @@ export default class App extends Component {
                     <Drawer
                         onClose={() => this.handleToggle()}
                         open={this.state.open}>
-
-                        <MenuItem onClick={this.handleClose.bind(this)}>Kategorie erstellen</MenuItem>
-                        <MenuItem onClick={this.handleClose.bind(this)}>Kategorien anzeigen</MenuItem>
-                        <MenuItem onClick={this.handleClose.bind(this)}>Teams</MenuItem>
-                        
+                        <MenuItem component={Link} to="/category/create" onClick={this.handleClose.bind(this)}>Kategorie erstellen</MenuItem>
+                        <MenuItem component={Link} to="/category/list" onClick={this.handleClose.bind(this)}>Kategorien anzeigen</MenuItem>
+                        <MenuItem component={Link} to="/teams" onClick={this.handleClose.bind(this)}>Teams</MenuItem>
                     </Drawer>
                     <Route path="/teams" component={Teams} />
                     <Route path="/category/list" component={CategoryList} />

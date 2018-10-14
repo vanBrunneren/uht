@@ -9,6 +9,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default class Teams extends Component {
 
@@ -17,16 +18,16 @@ export default class Teams extends Component {
 
         this.state = {
             isLoading: true,
-            teams: []
+            data: []
         }
     }
 
     componentDidMount() {
-        fetch('/api/teams', {
+        fetch('/api/teams/list/all', {
             method: 'GET'
         })
           .then(response => response.json())
-          .then(jsonResponse => this.setState({teams: jsonResponse, isLoading: false}))
+          .then(jsonResponse => this.setState({data: jsonResponse, isLoading: false}))
           .catch(e => console.log(e));
     }
 
@@ -34,33 +35,41 @@ export default class Teams extends Component {
 
         if(this.state.isLoading) {
             return(
-                <div>
-                    <p>Laden...</p>
-                </div>
-            )
+                <CircularProgress />
+            );
         }
 
+        let categories = [];
         let teams = [];
-        if(this.state.teams) {
-            for(let team of this.state.teams) {
-                teams.push(
-                    <TableRow key={team.id}>
-                        <TableCell>{team.name}</TableCell>
-                    </TableRow>
+        if(this.state.data) {
+            for(let data of this.state.data) {
+                teams = [];
+                for(let team of data.teams) {
+                    teams.push(
+                        <TableRow key={team.id}>
+                            <TableCell>{team.name}</TableCell>
+                        </TableRow>
+                    );
+                }
+
+                categories.push(
+                    <Table key={data.category.id}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>{data.category.name}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {teams}
+                        </TableBody>
+                    </Table>
                 );
             }
         }
         return (
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Name</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {teams}
-                </TableBody>
-            </Table>
+            <div>
+                {categories}
+            </div>
         );
     }
 }

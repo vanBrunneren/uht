@@ -5,6 +5,15 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 
+import AddIcon from '@material-ui/icons/Add';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 export default class CategoryList extends Component {
 
     constructor() {
@@ -51,7 +60,7 @@ export default class CategoryList extends Component {
         if(this.state.isLoading) {
             return(
                 <div>
-                    <p>Laden...</p>
+                    <CircularProgress />
                 </div>
             )
         }
@@ -60,26 +69,25 @@ export default class CategoryList extends Component {
         if(this.state.categories) {
             for(let category of this.state.categories) {
                 categories.push(
-                    <div key={category.id}>
-                        <p>{category.name}</p><a onClick={() => this.onXClick(category.id)}>x</a>
-                    </div>
+                    <TableRow key={category.id}>
+                        <TableCell>{category.name}</TableCell>
+                        <TableCell><a onClick={() => this.onXClick(category.id)}><DeleteIcon /></a></TableCell>
+                    </TableRow>
                 );
             }
         }
         return (
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <div className="card">
-                            <div className="card-header">Alle Kategorien</div>
-                            <Link to="/category/create">+</Link>
-                            <div className="card-body">
-                                {categories}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell></TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {categories}
+                </TableBody>
+            </Table>
         );
     }
 }
