@@ -23,7 +23,9 @@ class CategoryController extends Controller
             $category->name = $request['name'];
             $category->start_datetime = $request['start'];
             $category->save();
-            return 1;
+
+            $categories = Category::all();
+            return $categories;
         } catch (\Exception $e) {
             return 0;
         }

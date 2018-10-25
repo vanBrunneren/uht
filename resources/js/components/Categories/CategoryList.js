@@ -13,81 +13,214 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
 
-export default class CategoryList extends Component {
+import TextField from '@material-ui/core/TextField';
 
-    constructor() {
-        super();
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
-        this.state = {
-            isLoading: true,
-            categories: []
-        }
-    }
+import { withStyles } from '@material-ui/core/styles';
 
-    onXClick(id) {
+const styles = theme => ({
+	
+	fab: {
+		position: 'absolute',
+		bottom: theme.spacing.unit * 2,
+		right: theme.spacing.unit * 2,
+	}
 
-        fetch('/api/categories/'+id, {
-            method: 'DELETE'
-        })
-            .then(response => response.json())
-            .then(jsonResponse => {
-                console.log(jsonResponse);
-                if(jsonResponse == 1) {
-                    this.setState({isLoading: true});
-                    this.loadCategories();
-                }
-            })
-            .catch(e => console.log(e));
+});
 
-    }
+class CategoryList extends Component {
 
-    loadCategories() {
-        fetch('/api/categories', {
-            method: 'GET'
-        })
-          .then(response => response.json())
-          .then(jsonResponse => this.setState({categories: jsonResponse, isLoading: false}))
-          .catch(e => console.log(e));
-    }
+	constructor() {
+		super();
 
-    componentDidMount() {
-        this.loadCategories();
-    }
+		this.state = {
+			isLoading: true,
+			categories: [],
+			open: false
+		}
+	}
 
-    render() {
+	onSavePress() {
 
-        if(this.state.isLoading) {
-            return(
-                <div>
-                    <CircularProgress />
-                </div>
-            )
-        }
+		if(this.state.categoryName && this.state.categoryDate) {
+			
+			let categoryFormData = new FormData();
+			categoryFormData.append("name", this.state.categoryName);
+			categoryFormData.append("start", this.state.categoryDate);
 
-        let categories = [];
-        if(this.state.categories) {
-            for(let category of this.state.categories) {
-                categories.push(
-                    <TableRow key={category.id}>
-                        <TableCell>{category.name}</TableCell>
-                        <TableCell><a onClick={() => this.onXClick(category.id)}><DeleteIcon /></a></TableCell>
-                    </TableRow>
-                );
-            }
-        }
-        return (
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {categories}
-                </TableBody>
-            </Table>
-        );
-    }
+			fetch('/api/categories', {
+				method: 'POST',
+				body: categoryFormData
+			})
+			  .then(response => response.json())
+			  .then(jsonResponse => this.setState({categories: jsonResponse, isLoading: false}))
+			  .catch(e => console.log(e));
+
+
+			this.setState({open: false});
+
+		}
+	}
+
+	handleClickOpen() {
+		this.setState({ open: true });
+	}
+
+	handleClose() {
+		this.setState({ open: false });
+	}
+
+	onXClick(id) {
+
+		/*
+		fetch('/api/categories/'+id, {
+			method: 'DELETE'
+		})
+			.then(response => response.json())
+			.then(jsonResponse => {
+				console.log(jsonResponse);
+				if(jsonResponse == 1) {
+					this.setState({isLoading: true});
+					this.loadCategories();
+				}
+			})
+			.catch(e => console.log(e));
+		*/
+	
+	}
+
+	loadCategories() {
+		fetch('/api/categories', {
+			method: 'GET'
+		})
+		  .then(response => response.json())
+		  .then(jsonResponse => this.setState({categories: jsonResponse, isLoading: false}))
+		  .catch(e => console.log(e));
+	}
+
+	componentDidMount() {
+		this.loadCategories();
+	}
+
+	render() {
+
+		if(this.state.isLoading) {
+			return(
+				<div className={this.props.classes.loadingContainer}>
+					<CircularProgress
+						size={40}
+						left={-20}
+						top={-20}
+						status={'loading'}
+						style={{marginLeft: '50%', marginTop: '25%'}} />
+				</div>
+			)
+		}
+
+		const { classes } = this.props;
+
+		const fab = {
+			color: 'primary',
+			className: classes.fab,
+			icon: <AddIcon />,
+		};
+
+		let categories = [];
+		if(this.state.categories) {
+			for(let category of this.state.categories) {
+
+				categories.push(
+					<TableRow key={category.id}>
+						<TableCell>{category.name}</TableCell>
+						<TableCell>{category.start_datetime}</TableCell>
+						<TableCell><a onClick={() => this.onXClick(category.id)}><DeleteIcon /></a></TableCell>
+					</TableRow>
+				);
+			}
+		}
+		return (
+			<div>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell>Name</TableCell>
+							<TableCell>Startzeit</TableCell>
+							<TableCell>Action</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{categories}
+					</TableBody>
+				</Table>
+				<Button variant="fab" className={fab.className} color={fab.color} onClick={ () => this.handleClickOpen() }>
+					{fab.icon}
+				</Button>
+				<Dialog
+					open={this.state.open}
+					onClose={ () => this.handleClose() }
+					aria-labelledby="form-dialog-title">
+          			<DialogTitle id="form-dialog-title">Kategorie erstellen</DialogTitle>
+					<DialogContent>
+						<TextField
+							onChange={ (e) => this.setState({categoryName: e.target.value})}
+							autoFocus
+							margin="dense"
+							id="name"
+							label="Name"
+							type="text"
+							fullWidth />
+						<TextField
+							onChange={ (e) => this.setState({categoryDate: e.target.value})}
+							id="datetime-local"
+							label="Startzeit"
+							type="datetime-local"
+							defaultValue=""
+							className={classes.textField}
+							InputLabelProps={{
+								shrink: true,
+							}} />
+					</DialogContent>
+         			<DialogActions>
+            			<Button onClick={ () => this.handleClose() } color="primary">
+              				Abbrechen
+            			</Button>
+            			<Button onClick={ () => this.onSavePress() } color="primary">
+            				Speichern
+            			</Button>
+          			</DialogActions>
+        		</Dialog>
+			</div>
+		);
+	}
 }
+
+export default withStyles(styles)(CategoryList);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
