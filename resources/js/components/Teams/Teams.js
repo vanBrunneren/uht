@@ -1,17 +1,37 @@
 /**
  *
+ * 	Team List Component
+ *
+ * 	@author Pascal Brunner <info@pascalbrunner.ch>
+ *  @copyright Pascal Brunner 2018-10-28
+ *
  */
 
 import React, { Component } from 'react';
 
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Table 				from '@material-ui/core/Table';
+import TableBody 			from '@material-ui/core/TableBody';
+import TableCell 			from '@material-ui/core/TableCell';
+import TableHead 			from '@material-ui/core/TableHead';
+import TableRow 			from '@material-ui/core/TableRow';
+import CircularProgress 	from '@material-ui/core/CircularProgress';
+import { withStyles } 		from '@material-ui/core/styles';
 
-export default class Teams extends Component {
+import DeleteIcon 			from '@material-ui/icons/Delete';
+
+const styles = theme => ({
+
+	actionCell: {
+		width: '100px'
+	},
+
+	deleteLink: {
+		cursor: 'pointer'
+	}
+
+});
+
+class Teams extends Component {
 
 	constructor() {
 		super();
@@ -22,7 +42,21 @@ export default class Teams extends Component {
 		}
 	}
 
-	componentDidMount() {
+	onDeleteClick(id) {
+		fetch('/api/teams/'+id, {
+			method: 'DELETE'
+		})
+			.then(response => response.json())
+			.then(jsonResponse => {
+				if(jsonResponse == 1) {
+					this.setState({isLoading: true});
+					this.loadTeams();
+				}
+			})
+			.catch(e => console.log(e));
+	}
+
+	loadTeams() {
 		fetch('/api/teams/list/all', {
 			method: 'GET'
 		})
@@ -31,7 +65,13 @@ export default class Teams extends Component {
 		  .catch(e => console.log(e));
 	}
 
+	componentDidMount() {
+		this.loadTeams();
+	}
+
 	render() {
+
+		const { classes } = this.props;
 
 		if(this.state.isLoading) {
 			return(
@@ -53,6 +93,9 @@ export default class Teams extends Component {
 					teams.push(
 						<TableRow key={team.id}>
 							<TableCell>{team.name}</TableCell>
+							<TableCell className={classes.actionCell}>
+								<a className={classes.deleteLink} onClick={() => this.onDeleteClick(team.id)}><DeleteIcon /></a>
+							</TableCell>
 						</TableRow>
 					);
 				}
@@ -62,6 +105,7 @@ export default class Teams extends Component {
 						<TableHead>
 							<TableRow>
 								<TableCell>{data.category.name}</TableCell>
+								<TableCell className={classes.actionCell}>Action</TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -78,3 +122,5 @@ export default class Teams extends Component {
 		);
 	}
 }
+
+export default withStyles(styles)(Teams);

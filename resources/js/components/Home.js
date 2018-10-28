@@ -1,5 +1,10 @@
 /**
  *
+ * 	Home Component to set defaults
+ *
+ * 	@author Pascal Brunner <info@pascalbrunner.ch>
+ *  @copyright Pascal Brunner 2018-10-28
+ *
  */
 
 import React, { Component } from 'react';
@@ -11,37 +16,35 @@ import {
 
 import 'typeface-roboto';
 
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import AppBar from '@material-ui/core/AppBar';
-import Drawer from '@material-ui/core/Drawer';
-import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline'
+import AppBar 				from '@material-ui/core/AppBar';
+import Drawer 				from '@material-ui/core/Drawer';
+import MenuItem 			from '@material-ui/core/MenuItem';
+import Toolbar 				from '@material-ui/core/Toolbar';
+import IconButton 			from '@material-ui/core/IconButton';
+import Typography 			from '@material-ui/core/Typography';
+import Button 				from '@material-ui/core/Button';
+import CssBaseline 			from '@material-ui/core/CssBaseline';
+import List 				from '@material-ui/core/List';
+import Divider 				from '@material-ui/core/Divider';
+import ListItem 			from '@material-ui/core/ListItem';
+import ListItemIcon 		from '@material-ui/core/ListItemIcon';
+import ListItemText 		from '@material-ui/core/ListItemText';
+import { withStyles } 		from '@material-ui/core/styles';
 
-import Teams from './Teams/Teams';
-import CategoryList from './Categories/CategoryList';
+import MuiThemeProvider 	from '@material-ui/core/styles/MuiThemeProvider';
 
-import { withStyles } from '@material-ui/core/styles';
+import MenuIcon 			from '@material-ui/icons/Menu';
 
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import Teams 				from './Teams/Teams';
+import Categories 			from './Categories/Categories';
+import Games 				from './Games/Games';
 
 const styles = {
+
 	list: {
 		width: 300,
-	},
-	fullList: {
-		width: 'auto',
-	},
+	}
+
 };
 
 class Home extends Component {
@@ -58,14 +61,6 @@ class Home extends Component {
 		this.setState({open: !this.state.open});
 	}
 
-	handleClose() {
-		this.setState({open: false});
-	}
-
-	handleClick() {
-		alert('onClick triggered on the title component');
-	}
-
 	render() {
 
 		const { classes } = this.props;
@@ -78,6 +73,10 @@ class Home extends Component {
 			{
 				name: 'Teams',
 				link: '/teams'
+			},
+			{
+				name: 'Spiele',
+				link: '/games'
 			}
 		];
 
@@ -119,7 +118,8 @@ class Home extends Component {
 						</div>
 					</Drawer>
 					<Route path="/teams" component={Teams} />
-					<Route path="/categories" component={CategoryList} />
+					<Route path="/categories" component={Categories} />
+					<Route path="/games" component={Games} />
 				</div>
 			</Router>
 		);
@@ -128,23 +128,3 @@ class Home extends Component {
 }
 
 export default withStyles(styles)(Home);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

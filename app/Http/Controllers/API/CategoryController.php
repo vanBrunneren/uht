@@ -12,8 +12,16 @@ class CategoryController extends Controller
 
     public function index()
     {
+        $formattedCategories = array();
         $categories = Category::all();
-        return $categories;
+        foreach($categories as $category) {
+            $formattedCategories[] = array(
+                'id' => $category->id,
+                'name' => $category->name,
+                'start_datetime' => date("d.m.Y H:i:s", strtotime($category->start_datetime))
+            );
+        }
+        return $formattedCategories;
     }
 
     public function store(Request $request)

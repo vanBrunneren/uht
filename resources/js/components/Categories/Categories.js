@@ -1,32 +1,36 @@
 /**
  *
+ * 	Category Component
+ *
+ * 	@author Pascal Brunner <info@pascalbrunner.ch>
+ *  @copyright Pascal Brunner 2018-10-28
+ *
  */
 
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
+import { Link } 			from "react-router-dom";
 
-import AddIcon from '@material-ui/icons/Add';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
+import Table 				from '@material-ui/core/Table';
+import TableBody 			from '@material-ui/core/TableBody';
+import TableCell 			from '@material-ui/core/TableCell';
+import TableHead 			from '@material-ui/core/TableHead';
+import TableRow 			from '@material-ui/core/TableRow';
+import CircularProgress 	from '@material-ui/core/CircularProgress';
+import Button 				from '@material-ui/core/Button';
+import Dialog 				from '@material-ui/core/Dialog';
+import DialogActions 		from '@material-ui/core/DialogActions';
+import DialogContent 		from '@material-ui/core/DialogContent';
+import DialogContentText 	from '@material-ui/core/DialogContentText';
+import DialogTitle 			from '@material-ui/core/DialogTitle';
+import TextField 			from '@material-ui/core/TextField';
+import { withStyles } 		from '@material-ui/core/styles';
 
-import TextField from '@material-ui/core/TextField';
+import AddIcon 				from '@material-ui/icons/Add';
+import DeleteIcon 			from '@material-ui/icons/Delete';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
-import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
-	
+
 	fab: {
 		position: 'absolute',
 		bottom: theme.spacing.unit * 2,
@@ -35,7 +39,7 @@ const styles = theme => ({
 
 });
 
-class CategoryList extends Component {
+class Categories extends Component {
 
 	constructor() {
 		super();
@@ -50,7 +54,7 @@ class CategoryList extends Component {
 	onSavePress() {
 
 		if(this.state.categoryName && this.state.categoryDate) {
-			
+
 			let categoryFormData = new FormData();
 			categoryFormData.append("name", this.state.categoryName);
 			categoryFormData.append("start", this.state.categoryDate);
@@ -93,7 +97,7 @@ class CategoryList extends Component {
 			})
 			.catch(e => console.log(e));
 		*/
-	
+
 	}
 
 	loadCategories() {
@@ -135,16 +139,17 @@ class CategoryList extends Component {
 		let categories = [];
 		if(this.state.categories) {
 			for(let category of this.state.categories) {
-
 				categories.push(
 					<TableRow key={category.id}>
 						<TableCell>{category.name}</TableCell>
 						<TableCell>{category.start_datetime}</TableCell>
-						<TableCell><a onClick={() => this.onXClick(category.id)}><DeleteIcon /></a></TableCell>
 					</TableRow>
 				);
+				//<TableCell><a onClick={() => this.onXClick(category.id)}><DeleteIcon /></a></TableCell>
 			}
 		}
+
+		//<TableCell>Action</TableCell>
 		return (
 			<div>
 				<Table>
@@ -152,7 +157,6 @@ class CategoryList extends Component {
 						<TableRow>
 							<TableCell>Name</TableCell>
 							<TableCell>Startzeit</TableCell>
-							<TableCell>Action</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -201,26 +205,4 @@ class CategoryList extends Component {
 	}
 }
 
-export default withStyles(styles)(CategoryList);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default withStyles(styles)(Categories);
