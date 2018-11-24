@@ -44,11 +44,16 @@ class TeamController extends Controller
         }
 
         if($categories) {
-            foreach ($categories as $category) {
-                $teams = Team::where('category_id', '=', $category['id'])->get();
-                $data[] = array('category' => $category, 'teams' => $teams);
+            if(is_array($categories)) {
+                foreach ($categories as $category) {
+                    $teams = Team::where('category_id', '=', $category['id'])->get();
+                    $data[] = array('category' => $category, 'teams' => $teams);
+                }
+                return $data;
+            } else {
+                $teams = Team::where('category_id', '=', $categories['id'])->get();
+                return array('category' => $categories, 'teams' => $teams);
             }
-            return $data;
         }
 
         return 0;

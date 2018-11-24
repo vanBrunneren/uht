@@ -50,8 +50,14 @@ class Games extends Component {
 
         this.state ={
             games: [],
+            categories: [],
             isLoading: true,
-            open: false
+            open: false,
+            selectedCategory: 1,
+            teams: [],
+            selectedTeam_1: '',
+            selectedTeam_2: '',
+            category: []
         }
     }
 
@@ -63,6 +69,20 @@ class Games extends Component {
         this.setState({open: !this.state.open})
     }
 
+    onCategorySelect(event, value) {
+        this.setState({selectedCategory: value.props.value}, () => {
+            this.loadTeams()
+        });
+    }
+
+    onTeam1Select(event, value) {
+        this.setState({selectedTeam_1: value.props.value});
+    }
+
+    onTeam2Select(event, value) {
+        this.setState({selectedTeam_2: value.props.value});
+    }
+
     loadGames() {
         fetch('/api/games', {
 			method: 'GET'
@@ -72,8 +92,28 @@ class Games extends Component {
 		  .catch(e => console.log(e));
     }
 
+    loadCategories() {
+        fetch('/api/categories', {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(jsonResponse => this.setState({categories: jsonResponse}))
+            .catch(e => console.log(e));
+    }
+
+    loadTeams() {
+        fetch('/api/teams/list/'+this.state.selectedCategory, {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(jsonResponse => this.setState({teams: jsonResponse.teams, category: jsonResponse.category}))
+            .catch(e => console.log(e));
+    }
+
     componentDidMount() {
         this.loadGames();
+        this.loadCategories();
+        this.loadTeams();
     }
 
     render() {
@@ -99,6 +139,21 @@ class Games extends Component {
 			icon: <AddIcon />,
 		};
 
+        let categories = [];
+        if(this.state.categories) {
+            for(let cat of this.state.categories) {
+                categories.push(
+                    <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
+                );
+            }
+        }
+
+        let teams = this.state.teams.map( team => {
+            return(
+                <MenuItem key={team.id} value={team.id}>{team.name}</MenuItem>
+            );
+        });
+
         return(
             <div>
                 <Button variant="fab" className={fab.className} color={fab.color} onClick={ () => this.handleToggle() }>
@@ -113,43 +168,37 @@ class Games extends Component {
                         <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="category">Kategorie</InputLabel>
                             <Select
-                                value={10}
-                                onChange={this.handleChange}
+                                value={this.state.selectedCategory}
+                                onChange={this.onCategorySelect.bind(this)}
                                 inputProps={{
                                     name: 'Kategorie',
                                     id: 'category',
                                 }}>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                {categories}
                             </Select>
                         </FormControl>
                         <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="team_id_1">Team 1</InputLabel>
                             <Select
-                                value={20}
-                                onChange={this.handleChange}
+                                value={this.state.selectedTeam_1}
+                                onChange={this.onTeam1Select.bind(this)}
                                 inputProps={{
                                     name: 'Team 1',
                                     id: 'team_id_1',
                                 }}>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                {teams}
                             </Select>
                         </FormControl>
                         <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="team_id_2">Team 2</InputLabel>
                             <Select
-                                value={30}
-                                onChange={this.handleChange}
+                                value={this.state.selectedTeam_2}
+                                onChange={this.onTeam2Select.bind(this)}
                                 inputProps={{
                                     name: 'Team 2',
                                     id: 'team_id_2',
                                 }}>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                {teams}
                             </Select>
                         </FormControl>
                         <FormControl className={classes.formControl}>

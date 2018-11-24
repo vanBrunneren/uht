@@ -37,7 +37,8 @@ class GameController extends Controller
 
     public function show($id)
     {
-
+        $game = Game::get($id);
+        return $game;
     }
 
     public function update(Request $request, $id)
@@ -49,4 +50,15 @@ class GameController extends Controller
     {
 
     }
+
+    public function goal(Request $request, $id)
+    {
+        try {
+            $game = Game::get($request['game_id']);
+
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
 }
