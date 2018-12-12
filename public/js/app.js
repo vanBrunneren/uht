@@ -87303,6 +87303,18 @@ exports.default = _default;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__material_ui_icons_Add___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__material_ui_icons_Add__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__material_ui_icons_Delete__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__material_ui_icons_Delete___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15__material_ui_icons_Delete__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__material_ui_icons_Edit__ = __webpack_require__(395);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__material_ui_icons_Edit___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16__material_ui_icons_Edit__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__material_ui_core_Table__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__material_ui_core_Table___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_17__material_ui_core_Table__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__material_ui_core_TableBody__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__material_ui_core_TableBody___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18__material_ui_core_TableBody__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell__ = __webpack_require__(117);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__material_ui_core_TableHead__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__material_ui_core_TableHead___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_20__material_ui_core_TableHead__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__material_ui_core_TableRow__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__material_ui_core_TableRow___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_21__material_ui_core_TableRow__);
 /**
  *
  * 	Games Component
@@ -87341,6 +87353,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
+
+
+
+
+
+
+
 var styles = function styles(theme) {
     return {
 
@@ -87353,6 +87372,18 @@ var styles = function styles(theme) {
             position: 'absolute',
             bottom: theme.spacing.unit * 2,
             right: theme.spacing.unit * 2
+        },
+
+        goalCell: {
+            width: '40px'
+        },
+
+        deleteLink: {
+            cursor: 'pointer'
+        },
+
+        actionCell: {
+            width: '5px'
         }
 
     };
@@ -87371,6 +87402,7 @@ var Games = function (_Component) {
             categories: [],
             isLoading: true,
             open: false,
+            editOpen: false,
             selectedCategory: 1,
             teams: [],
             selectedTeam_1: '',
@@ -87381,9 +87413,64 @@ var Games = function (_Component) {
     }
 
     _createClass(Games, [{
+        key: 'onDeleteClick',
+        value: function onDeleteClick(id) {
+            var _this2 = this;
+
+            fetch('/api/games/' + id, {
+                method: 'DELETE'
+            }).then(function (response) {
+                return response.json();
+            }).then(function (jsonResponse) {
+                if (jsonResponse == 1) {
+                    _this2.setState({ isLoading: true });
+                    _this2.loadGames();
+                }
+            }).catch(function (e) {
+                return console.log(e);
+            });
+        }
+    }, {
         key: 'onSavePress',
         value: function onSavePress() {
-            console.log("save");
+            var _this3 = this;
+
+            var gameFormData = new FormData();
+            gameFormData.append("team_1_id", this.state.selectedTeam_1);
+            gameFormData.append("team_2_id", this.state.selectedTeam_2);
+            gameFormData.append("length", this.state.gameLength);
+            gameFormData.append("start_datetime", this.state.gameDate);
+
+            fetch('/api/games', {
+                method: 'POST',
+                body: gameFormData
+            }).then(function (response) {
+                return response.json();
+            }).then(function (jsonResponse) {
+                return _this3.setState({ games: jsonResponse, isLoading: false });
+            }).catch(function (e) {
+                return console.log(e);
+            });
+        }
+    }, {
+        key: 'onEditPress',
+        value: function onEditPress() {
+
+            var gameFormData = new FormData();
+            gameFormData.append("length", this.state.gameLength);
+            gameFormData.append("start_datetime", this.state.gameDate);
+
+            console.log(gameFormData, this.state);
+
+            /*
+            fetch('/api/games/'+this.state.editId, {
+                method: 'PUT',
+                body: gameFormData
+            })
+              .then( response => response.json())
+              .then(jsonResponse => this.setState({games: jsonResponse, isLoading: false}))
+              .catch(e => console.log(e));
+              */
         }
     }, {
         key: 'handleToggle',
@@ -87391,12 +87478,25 @@ var Games = function (_Component) {
             this.setState({ open: !this.state.open });
         }
     }, {
+        key: 'closeEdit',
+        value: function closeEdit() {
+            this.setState({ editOpen: false, editId: false });
+        }
+    }, {
+        key: 'openEdit',
+        value: function openEdit(id) {
+            this.setState({
+                editOpen: true,
+                editId: id
+            });
+        }
+    }, {
         key: 'onCategorySelect',
         value: function onCategorySelect(event, value) {
-            var _this2 = this;
+            var _this4 = this;
 
             this.setState({ selectedCategory: value.props.value }, function () {
-                _this2.loadTeams();
+                _this4.loadTeams();
             });
         }
     }, {
@@ -87412,14 +87512,14 @@ var Games = function (_Component) {
     }, {
         key: 'loadGames',
         value: function loadGames() {
-            var _this3 = this;
+            var _this5 = this;
 
             fetch('/api/games', {
                 method: 'GET'
             }).then(function (response) {
                 return response.json();
             }).then(function (jsonResponse) {
-                return _this3.setState({ games: jsonResponse, isLoading: false });
+                return _this5.setState({ games: jsonResponse, isLoading: false });
             }).catch(function (e) {
                 return console.log(e);
             });
@@ -87427,14 +87527,14 @@ var Games = function (_Component) {
     }, {
         key: 'loadCategories',
         value: function loadCategories() {
-            var _this4 = this;
+            var _this6 = this;
 
             fetch('/api/categories', {
                 method: 'GET'
             }).then(function (response) {
                 return response.json();
             }).then(function (jsonResponse) {
-                return _this4.setState({ categories: jsonResponse });
+                return _this6.setState({ categories: jsonResponse });
             }).catch(function (e) {
                 return console.log(e);
             });
@@ -87442,14 +87542,20 @@ var Games = function (_Component) {
     }, {
         key: 'loadTeams',
         value: function loadTeams() {
-            var _this5 = this;
+            var _this7 = this;
 
             fetch('/api/teams/list/' + this.state.selectedCategory, {
                 method: 'GET'
             }).then(function (response) {
                 return response.json();
             }).then(function (jsonResponse) {
-                return _this5.setState({ teams: jsonResponse.teams, category: jsonResponse.category });
+                _this7.setState({
+                    teams: jsonResponse.teams,
+                    category: jsonResponse.category,
+                    isLoading: false,
+                    gameDate: jsonResponse.category.start_datetime,
+                    gameLength: "00:12:00"
+                });
             }).catch(function (e) {
                 return console.log(e);
             });
@@ -87464,7 +87570,7 @@ var Games = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this6 = this;
+            var _this8 = this;
 
             var classes = this.props.classes;
 
@@ -87520,30 +87626,253 @@ var Games = function (_Component) {
                 }
             }
 
-            var teams = this.state.teams.map(function (team) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_10__material_ui_core_MenuItem___default.a,
-                    { key: team.id, value: team.id },
-                    team.name
-                );
-            });
+            var teams = [];
+            if (this.state.teams) {
+                teams = this.state.teams.map(function (team) {
+                    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_10__material_ui_core_MenuItem___default.a,
+                        { key: team.id, value: team.id },
+                        team.name
+                    );
+                });
+            }
+
+            var games = [];
+            if (this.state.games) {
+                var _loop = function _loop(game) {
+                    games.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_21__material_ui_core_TableRow___default.a,
+                        { key: game.id },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            null,
+                            game.id
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            null,
+                            game.start_datetime
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            null,
+                            game.length
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            null,
+                            game.team_1
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            null,
+                            game.team_2
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            { className: classes.goalCell },
+                            game.team_1_goals,
+                            ':',
+                            game.team_2_goals
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            { className: classes.actionCell },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'a',
+                                { className: classes.deleteLink, onClick: function onClick() {
+                                        return _this8.openEdit(game.id);
+                                    } },
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_16__material_ui_icons_Edit___default.a, null)
+                            )
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                            { className: classes.actionCell },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'a',
+                                { className: classes.deleteLink, onClick: function onClick() {
+                                        return _this8.onDeleteClick(game.id);
+                                    } },
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_15__material_ui_icons_Delete___default.a, null)
+                            )
+                        )
+                    ));
+                };
+
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = this.state.games[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var game = _step2.value;
+
+                        _loop(game);
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+            }
+
+            var category_starttime = void 0;
+            if (this.state.category && this.state.category.start_datetime) {
+                category_starttime = this.state.category.start_datetime.replace(" ", "T");
+            }
 
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_17__material_ui_core_Table___default.a,
+                    null,
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_20__material_ui_core_TableHead___default.a,
+                        null,
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_21__material_ui_core_TableRow___default.a,
+                            null,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                '#'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'Startzeit'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'L\xE4nge'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'Team 1'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'Team 2'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'Resultat'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'Bearbeiten'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_19__material_ui_core_TableCell___default.a,
+                                null,
+                                'L\xF6schen'
+                            )
+                        )
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_18__material_ui_core_TableBody___default.a,
+                        null,
+                        games
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     __WEBPACK_IMPORTED_MODULE_1__material_ui_core_Button___default.a,
                     { variant: 'fab', className: fab.className, color: fab.color, onClick: function onClick() {
-                            return _this6.handleToggle();
+                            return _this8.handleToggle();
                         } },
                     fab.icon
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     __WEBPACK_IMPORTED_MODULE_2__material_ui_core_Dialog___default.a,
                     {
+                        open: this.state.editOpen,
+                        onClose: function onClose() {
+                            return _this8.closeEdit();
+                        },
+                        'aria-labelledby': 'form-dialog-title' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_6__material_ui_core_DialogTitle___default.a,
+                        { id: 'form-dialog-title' },
+                        'Spiel bearbeiten'
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_4__material_ui_core_DialogContent___default.a,
+                        null,
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_11__material_ui_core_FormControl___default.a,
+                            { className: classes.formControl },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7__material_ui_core_TextField___default.a, {
+                                onChange: function onChange(e) {
+                                    return _this8.setState({ gameLength: e.target.value });
+                                },
+                                id: 'time',
+                                label: 'L\xE4nge (hh:mm:ss)',
+                                type: 'time',
+                                defaultValue: '00:12:00',
+                                className: classes.textField,
+                                InputLabelProps: {
+                                    shrink: true
+                                },
+                                inputProps: {
+                                    step: 30 // 5 min
+                                } })
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_11__material_ui_core_FormControl___default.a,
+                            { className: classes.formControl },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7__material_ui_core_TextField___default.a, {
+                                onChange: function onChange(e) {
+                                    return _this8.setState({ gameDate: e.target.value });
+                                },
+                                id: 'datetime-local',
+                                label: 'Startzeit',
+                                type: 'datetime-local',
+                                defaultValue: category_starttime,
+                                className: classes.textField,
+                                InputLabelProps: {
+                                    shrink: true
+                                } })
+                        )
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_3__material_ui_core_DialogActions___default.a,
+                        null,
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1__material_ui_core_Button___default.a,
+                            { onClick: function onClick() {
+                                    return _this8.closeEdit();
+                                }, color: 'primary' },
+                            'Abbrechen'
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1__material_ui_core_Button___default.a,
+                            { onClick: this.onEditPress.bind(this), color: 'primary' },
+                            'Speichern'
+                        )
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_2__material_ui_core_Dialog___default.a,
+                    {
                         open: this.state.open,
                         onClose: function onClose() {
-                            return _this6.handleToggle();
+                            return _this8.handleToggle();
                         },
                         'aria-labelledby': 'form-dialog-title' },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -87618,6 +87947,9 @@ var Games = function (_Component) {
                             __WEBPACK_IMPORTED_MODULE_11__material_ui_core_FormControl___default.a,
                             { className: classes.formControl },
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7__material_ui_core_TextField___default.a, {
+                                onChange: function onChange(e) {
+                                    return _this8.setState({ gameLength: e.target.value });
+                                },
                                 id: 'time',
                                 label: 'L\xE4nge (hh:mm:ss)',
                                 type: 'time',
@@ -87635,12 +87967,12 @@ var Games = function (_Component) {
                             { className: classes.formControl },
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7__material_ui_core_TextField___default.a, {
                                 onChange: function onChange(e) {
-                                    return _this6.setState({ categoryDate: e.target.value });
+                                    return _this8.setState({ gameDate: e.target.value });
                                 },
                                 id: 'datetime-local',
                                 label: 'Startzeit',
                                 type: 'datetime-local',
-                                defaultValue: '',
+                                defaultValue: category_starttime,
                                 className: classes.textField,
                                 InputLabelProps: {
                                     shrink: true
@@ -87653,15 +87985,13 @@ var Games = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             __WEBPACK_IMPORTED_MODULE_1__material_ui_core_Button___default.a,
                             { onClick: function onClick() {
-                                    return _this6.handleToggle();
+                                    return _this8.handleToggle();
                                 }, color: 'primary' },
                             'Abbrechen'
                         ),
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             __WEBPACK_IMPORTED_MODULE_1__material_ui_core_Button___default.a,
-                            { onClick: function onClick() {
-                                    return _this6.onSavePress();
-                                }, color: 'primary' },
+                            { onClick: this.onSavePress.bind(this), color: 'primary' },
                             'Speichern'
                         )
                     )
@@ -87680,6 +88010,34 @@ var Games = function (_Component) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 394 */,
+/* 395 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(47);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(1));
+
+var _createSvgIcon = _interopRequireDefault(__webpack_require__(67));
+
+var _default = (0, _createSvgIcon.default)(_react.default.createElement(_react.default.Fragment, null, _react.default.createElement("path", {
+  d: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+}), _react.default.createElement("path", {
+  fill: "none",
+  d: "M0 0h24v24H0z"
+})), 'Edit');
+
+exports.default = _default;
 
 /***/ })
 /******/ ]);

@@ -36,27 +36,22 @@ class TeamController extends Controller
 
     public function list($list)
     {
-        $data = array();
         if($list == "all") {
             $categories = Category::all();
+            $data = array();
+            foreach ($categories as $category) {
+                $teams = Team::where('category_id', '=', $category['id'])->get();
+                $data[] = array('category' => $category, 'teams' => $teams);
+            }
+            return $data;
+
         } else {
             $categories = Category::find($list);
+
+            $teams = Team::where('category_id', '=', $categories['id'])->get();
+            return array('category' => $categories, 'teams' => $teams);
         }
 
-        if($categories) {
-            if(is_array($categories)) {
-                foreach ($categories as $category) {
-                    $teams = Team::where('category_id', '=', $category['id'])->get();
-                    $data[] = array('category' => $category, 'teams' => $teams);
-                }
-                return $data;
-            } else {
-                $teams = Team::where('category_id', '=', $categories['id'])->get();
-                return array('category' => $categories, 'teams' => $teams);
-            }
-        }
-
-        return 0;
     }
 
 }
