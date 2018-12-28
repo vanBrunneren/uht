@@ -50,7 +50,13 @@ class GameController extends Controller
 
     public function show($id)
     {
-        $game = Game::get($id);
+        $game = DB::table('games')
+            ->select(DB::raw('games.*, t1.name as team_1, t2.name as team_2'))
+            ->join('teams as t1', 'team_1_id', 't1.id')
+            ->join('teams as t2', 'team_2_id', 't2.id')
+            ->where('games.id', '=', $id)
+            ->whereNull('games.deleted_at')
+            ->get();
         return $game;
     }
 

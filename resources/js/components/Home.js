@@ -31,13 +31,12 @@ import ListItemIcon 		from '@material-ui/core/ListItemIcon';
 import ListItemText 		from '@material-ui/core/ListItemText';
 import { withStyles } 		from '@material-ui/core/styles';
 
-import MuiThemeProvider 	from '@material-ui/core/styles/MuiThemeProvider';
-
 import MenuIcon 			from '@material-ui/icons/Menu';
 
 import Teams 				from './Teams/Teams';
 import Categories 			from './Categories/Categories';
 import Games 				from './Games/Games';
+import MatchView			from './MatchView/MatchView';
 
 const styles = {
 
@@ -77,6 +76,10 @@ class Home extends Component {
 			{
 				name: 'Spiele',
 				link: '/games'
+			},
+			{
+				name: 'MatchView',
+				link: '/matchview'
 			}
 		];
 
@@ -120,6 +123,7 @@ class Home extends Component {
 					<Route path="/teams" component={Teams} />
 					<Route path="/categories" component={Categories} />
 					<Route path="/games" component={Games} />
+					<Route path="/matchview" component={MatchView} />
 				</div>
 			</Router>
 		);
