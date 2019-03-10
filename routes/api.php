@@ -21,3 +21,5 @@ Route::get('teams/list/{list}', 'API\TeamController@list')->where('list', 'all|[
 Route::apiResource('teams', 'API\TeamController')->except(['store', 'update']);
 Route::apiResource('categories', 'API\CategoryController');
 Route::apiResource('games', 'API\GameController');
+
+Route::post('games/goal', 'API\GameController@goal');

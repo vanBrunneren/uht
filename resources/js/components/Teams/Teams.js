@@ -89,9 +89,12 @@ class Teams extends Component {
 		if(this.state.data) {
 			for(let data of this.state.data) {
 				teams = [];
+				let counter = 0
 				for(let team of data.teams) {
+					counter++
 					teams.push(
 						<TableRow key={team.id}>
+							<TableCell width="10px">{counter}</TableCell>
 							<TableCell>{team.name}</TableCell>
 							<TableCell className={classes.actionCell}>
 								<a className={classes.deleteLink} onClick={() => this.onDeleteClick(team.id)}><DeleteIcon /></a>
@@ -104,6 +107,7 @@ class Teams extends Component {
 					<Table key={data.category.id}>
 						<TableHead>
 							<TableRow>
+								<TableCell>#</TableCell>
 								<TableCell>{data.category.name}</TableCell>
 								<TableCell className={classes.actionCell}>Action</TableCell>
 							</TableRow>

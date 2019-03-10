@@ -37,6 +37,7 @@ import Teams 				from './Teams/Teams';
 import Categories 			from './Categories/Categories';
 import Games 				from './Games/Games';
 import MatchView			from './MatchView/MatchView';
+import GameBoard			from './GameBoard/GameBoard';
 
 const styles = {
 
@@ -80,6 +81,10 @@ class Home extends Component {
 			{
 				name: 'MatchView',
 				link: '/matchview'
+			},
+			{
+				name: 'GameBoard',
+				link: '/gameboard'
 			}
 		];
 
@@ -124,6 +129,7 @@ class Home extends Component {
 					<Route path="/categories" component={Categories} />
 					<Route path="/games" component={Games} />
 					<Route path="/matchview" component={MatchView} />
+					<Route path="/gameboard" component={GameBoard} />
 				</div>
 			</Router>
 		);

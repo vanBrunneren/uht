@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('gameboard/view', 'GameboardController@index');
+
 //Route::view('/{path?}', 'app');
 Route::get( '{any}', function () {
     return view('app'); // or wherever your React app is bootstrapped.

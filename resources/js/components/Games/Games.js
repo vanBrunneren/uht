@@ -161,6 +161,34 @@ class Games extends Component {
         this.setState({selectedTeam_2: value.props.value});
     }
 
+    onGoalPress(gameId, inputGoals, teamId, mode) {
+
+        let goals
+        if(mode === "+") {
+            goals = ++inputGoals
+        } else {
+            if(inputGoals > 0) {
+                goals = --inputGoals
+            }
+        }
+
+        let goalData = new FormData();
+        goalData.append('game_id', gameId);
+        goalData.append('team_id', teamId);
+        goalData.append('goals', goals);
+
+        fetch('/api/games/goal', {
+            method: 'POST',
+            body: goalData
+        })
+            .then( () => {
+                this.setState({isLoading: true})
+                this.loadGames()
+            })
+            .catch(e => console.log(e));
+
+    }
+
     loadGames() {
         fetch('/api/games', {
 			method: 'GET'
@@ -251,8 +279,16 @@ class Games extends Component {
                         <TableCell>{game.id}</TableCell>
 						<TableCell>{game.start_datetime}</TableCell>
 						<TableCell>{game.length}</TableCell>
-						<TableCell>{game.team_1}</TableCell>
-						<TableCell>{game.team_2}</TableCell>
+						<TableCell>
+                            <button onClick={ () => this.onGoalPress(game.id, game.team_1_goals, 1, "+")}>+</button>
+                            {game.team_1}
+                            <button onClick={ () => this.onGoalPress(game.id, game.team_1_goals, 1, "-")}>-</button>
+                        </TableCell>
+						<TableCell>
+                            <button onClick={ () => this.onGoalPress(game.id, game.team_2_goals, 2, "+")}>+</button>
+                            {game.team_2}
+                            <button onClick={ () => this.onGoalPress(game.id, game.team_2_goals, 2, "-")}>-</button>
+                        </TableCell>
 						<TableCell className={classes.goalCell}>{game.team_1_goals}:{game.team_2_goals}</TableCell>
                         <TableCell className={classes.actionCell}>
                             <a className={classes.deleteLink} onClick={() => this.openEdit(game.id)}><EditIcon /></a>

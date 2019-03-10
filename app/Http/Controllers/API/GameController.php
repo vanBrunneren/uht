@@ -61,7 +61,7 @@ class GameController extends Controller
     }
 
      public function update(Request $request, $id)
-    {
+     {
         try {
             $game = Game::find($id);
             $game->length = $request['length'];
@@ -93,11 +93,17 @@ class GameController extends Controller
         }
     }
 
-    public function goal(Request $request, $id)
+    public function goal(Request $request)
     {
         try {
-            $game = Game::get($request['game_id']);
-
+            $game = Game::find($request->game_id);
+            if($request->team_id == 1) {
+                $game->team_1_goals = $request->goals;
+            } else {
+                $game->team_2_goals = $request->goals;
+            }
+            $game->save();
+            return 1;
         } catch (\Exception $e) {
             return 0;
         }

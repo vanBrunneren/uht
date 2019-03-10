@@ -110,9 +110,51 @@ const styles = theme => ({
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center'
+    },
+
+    buttons: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%'
+    },
+
+    oneButtons: {
+        width: '35%',
+        display:'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        fontSize: 30
+    },
+
+    middleButtons: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '30%',
+    },
+
+    twoButtons: {
+        width: '35%',
+        display:'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        fontSize: 30
+    },
+
+    image: {
+        width: '200px'
+    },
+
+    imageContainer: {
+        padding: '40px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 
 });
+
+let interval = null
 
 class MatchView extends Component {
 
@@ -121,13 +163,45 @@ class MatchView extends Component {
 
         this.state = {
             game: [],
-            isLoading: true
+            isLoading: true,
+            minutes: 12,
+            seconds: 0,
+            finish: false,
+            isTicking: false,
+            gameId: 9
         };
 
     }
 
+    goal(teamId, mode) {
+
+        let game = this.state.game
+        if(mode === "+") {
+            game['team_'+teamId+'_goals']++
+        } else {
+            if(game['team_'+teamId+'_goals'] > 0) {
+                game['team_'+teamId+'_goals']--
+            }
+        }
+
+        let goalData = new FormData();
+        goalData.append("game_id", this.state.gameId);
+        goalData.append('team_id', teamId);
+        goalData.append('goals', game['team_'+teamId+'_goals']);
+
+        fetch('/api/games/goal', {
+            method: 'POST',
+            body: goalData
+        }).catch(e => console.log(e));
+
+        this.setState({
+            game
+        })
+
+    }
+
     loadGame() {
-        fetch('/api/games/8', {
+        fetch('/api/games/'+this.state.gameId, {
             method: 'GET'
         })
             .then(response => response.json())
@@ -138,6 +212,59 @@ class MatchView extends Component {
                 });
             })
             .catch(e => console.log(e));
+    }
+
+    tick() {
+        if(this.state.seconds < 1) {
+            if(this.state.minutes < 1) {
+                this.setState({
+                    minutes: 0,
+                    seconds: 0,
+                    finish: true
+                })
+                clearInterval(interval)
+                this.setState({
+                    isTicking: false
+                })
+            } else {
+                this.setState({
+                    minutes: this.state.minutes - 1,
+                    seconds: 59
+                });
+            }
+        } else {
+            this.setState({
+                seconds: this.state.seconds - 1
+            });
+        }
+    }
+
+    toggleTime() {
+        if(this.state.isTicking) {
+            clearInterval(interval)
+        } else {
+            interval = setInterval(
+                function() {
+                    this.tick();
+                }
+                .bind(this),
+                1000
+            )
+        }
+        this.setState({isTicking: !this.state.isTicking})
+    }
+
+    startTime() {
+        this.setState({
+            isTicking: true
+        })
+        interval = setInterval(
+            function() {
+                this.tick();
+            }
+            .bind(this),
+            1000
+        );
     }
 
     componentDidMount() {
@@ -159,6 +286,19 @@ class MatchView extends Component {
 			);
 		}
 
+        let time = ''
+        if(this.state.minutes < 10) {
+            time += '0'+this.state.minutes
+        } else {
+            time += this.state.minutes
+        }
+        time += ':'
+        if(this.state.seconds < 10) {
+            time += '0'+this.state.seconds
+        } else {
+            time += this.state.seconds
+        }
+
         return(
             <div className={classes.container}>
                 <div className={classes.content}>
@@ -177,22 +317,75 @@ class MatchView extends Component {
                         <div className={classes.team1Goals}>
                             <p>{this.state.game.team_1_goals}</p>
                         </div>
-                        <div className={classes.goalsPlaceholder}>
-                            <p>
-                                <Countdown
-                                    date={Date.now() + 10000}
-                                    intervalDelay={0}
-                                    precision={1}
-                                    renderer={props => <div>{props.minutes}:{props.seconds}</div>}
-                                />
-                            </p>
+                        <div className={classes.goalsPlaceholder} style={{backgroundColor: this.state.isTicking ? 'green' : 'red' }}>
+                            <p>{time}</p>
                         </div>
                         <div className={classes.team2Goals}>
                             <p>{this.state.game.team_2_goals}</p>
                         </div>
                     </div>
-                    <div>
-                        <div>SPONSOR</div>
+                    <div className={classes.buttons}>
+                        <div className={classes.oneButtons}>
+                            <button onClick={ () => this.goal(1, '+')}>
+                                +
+                            </button>
+                            <button onClick={ () => this.goal(1, '-')}>
+                                -
+                            </button>
+                        </div>
+                        <div className={classes.middleButtons}>
+                            <button onClick={ () => {
+                                if(this.state.minutes < 59) {
+                                    this.setState({minutes: this.state.minutes += 1})
+                                }
+                            }}>
+                                +
+                            </button>
+                            <button onClick={ () => {
+                                if(this.state.minutes > 0) {
+                                    this.setState({minutes: this.state.minutes -= 1})
+                                }
+                            }}>
+                                -
+                            </button>
+                            <button onClick={this.toggleTime.bind(this)}>
+                                {this.state.isTicking ? 'Pause' : 'Fortsetzen'}
+                            </button>
+                            <button onClick={ () => this.setState({minutes: 12, seconds: 0})}>
+                                Zeit setzen
+                            </button>
+                            <button onClick={ () => {
+                                if(this.state.seconds + 1 === 60) {
+                                    this.setState({seconds: 0, minutes: this.state.minutes += 1})
+                                } else {
+                                    this.setState({seconds: this.state.seconds += 1})
+                                }
+                            }}>
+                                +
+                            </button>
+                            <button onClick={ () => {
+                                if(this.state.seconds - 1 < 0) {
+                                    if(this.state.minutes > 0) {
+                                        this.setState({seconds: 59, minutes: this.state.minutes -= 1})
+                                    }
+                                } else {
+                                    this.setState({seconds: this.state.seconds -= 1})
+                                }
+                            }}>
+                                -
+                            </button>
+                        </div>
+                        <div className={classes.twoButtons}>
+                            <button onClick={ () => this.goal(2, '+')}>
+                                +
+                            </button>
+                            <button onClick={ () => this.goal(2, '-')}>
+                                -
+                            </button>
+                        </div>
+                    </div>
+                    <div className={classes.imageContainer}>
+                        <img src="https://unihockey-team-brunegg.ch/wp-content/uploads/2018/07/highflyers_logo.png" className={classes.image} />
                     </div>
                 </div>
             </div>
