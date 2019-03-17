@@ -28,6 +28,7 @@ import { withStyles } 		from '@material-ui/core/styles';
 import AddIcon 				from '@material-ui/icons/Add';
 import DeleteIcon 			from '@material-ui/icons/Delete';
 import EditIcon 			from '@material-ui/icons/Edit';
+import TouchApp 			from '@material-ui/icons/TouchApp';
 
 import Table 				from '@material-ui/core/Table';
 import TableBody 			from '@material-ui/core/TableBody';
@@ -77,7 +78,7 @@ class Games extends Component {
             teams: [],
             selectedTeam_1: '',
             selectedTeam_2: '',
-            category: []
+            category: [],
         }
     }
 
@@ -189,8 +190,14 @@ class Games extends Component {
 
     }
 
+    onCategoryChange(e) {
+        if(e.target.name === "category-select") {
+            this.setState({selectedCategory: e.target.value, isLoading: true}, () => this.loadGames());
+        }
+    }
+
     loadGames() {
-        fetch('/api/games', {
+        fetch('/api/games/getgamesbycategory/'+this.state.selectedCategory, {
 			method: 'GET'
 		})
 		  .then(response => response.json())
@@ -254,12 +261,37 @@ class Games extends Component {
 		};
 
         let categories = [];
+        let select;
         if(this.state.categories) {
             for(let cat of this.state.categories) {
                 categories.push(
                     <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
                 );
             }
+
+            let values = [];
+            for(let cat of this.state.categories) {
+                values.push(
+                    <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
+                );
+            }
+
+            select = (
+                <form className={classes.root} autoComplete="off">
+                    <FormControl className={classes.formControl}>
+                        <Select
+                            value={this.state.selectedCategory}
+                            onChange={this.onCategoryChange.bind(this)}
+                            inputProps={{
+                                name: 'category-select',
+                                id: 'category-select',
+                            }}>
+                            {values}
+                        </Select>
+                    </FormControl>
+                </form>
+            );
+
         }
 
         let teams = [];
@@ -290,6 +322,11 @@ class Games extends Component {
                             <button onClick={ () => this.onGoalPress(game.id, game.team_2_goals, 2, "-")}>-</button>
                         </TableCell>
 						<TableCell className={classes.goalCell}>{game.team_1_goals}:{game.team_2_goals}</TableCell>
+						<TableCell>
+                            <a href={"/matchview/" + game.id}>
+                                <TouchApp />
+                            </a>
+                        </TableCell>
                         <TableCell className={classes.actionCell}>
                             <a className={classes.deleteLink} onClick={() => this.openEdit(game.id)}><EditIcon /></a>
                         </TableCell>
@@ -308,6 +345,7 @@ class Games extends Component {
 
         return(
             <div>
+                {select}
                 <Table>
 					<TableHead>
 						<TableRow>
@@ -317,6 +355,7 @@ class Games extends Component {
 							<TableCell>Team 1</TableCell>
 							<TableCell>Team 2</TableCell>
 							<TableCell>Resultat</TableCell>
+							<TableCell>Spiel starten</TableCell>
                             <TableCell>Bearbeiten</TableCell>
                             <TableCell>Löschen</TableCell>
 						</TableRow>

@@ -97,18 +97,15 @@ class GameController extends Controller
 
     public function goal(Request $request)
     {
-        try {
-            $game = Game::find($request->game_id);
-            if($request->team_id == 1) {
-                $game->team_1_goals = $request->goals;
-            } else {
-                $game->team_2_goals = $request->goals;
-            }
-            $game->save();
-            return 1;
-        } catch (\Exception $e) {
-            return 0;
+        $game = Game::find($request->game_id);
+        if($request->team_id == 1) {
+            $game->team_1_goals = $request->goals;
+        } else {
+            $game->team_2_goals = $request->goals;
         }
+        $game->save();
+        return 1;
+
     }
 
     public function showGamesByTeam(Request $request)
@@ -126,6 +123,21 @@ class GameController extends Controller
         } catch(\Exception $e) {
             return 0;
         }
+    }
+
+    public function getGamesByCategory(Request $request)
+    {
+
+        $categoryId = $request->id;
+        $game = DB::table('games')
+            ->select(DB::raw('games.*, t1.name as team_1, t2.name as team_2'))
+            ->join('teams as t1', 'team_1_id', 't1.id')
+            ->join('teams as t2', 'team_2_id', 't2.id')
+            ->where('t1.category_id', '=', $categoryId)
+            ->whereNull('games.deleted_at')
+            ->orderBy('start_datetime')
+            ->get();
+        return $game;
     }
 
     public function getScore(Request $request) {
@@ -247,8 +259,11 @@ class GameController extends Controller
             }
         });
 
-
-        return array('group1' => array_reverse($group1), 'group2' => array_reverse($group2));
+        if($group2) {
+            return array('group1' => array_reverse($group1), 'group2' => array_reverse($group2));
+        } else {
+            return array('group1' => array_reverse($group1));
+        }
 
     }
 

@@ -138,7 +138,7 @@ class Home extends Component {
 					<Route path="/admin/gameboard" component={AdminGameBoard} />
 					<Route exact path="/" component={Frontpage} />
 					<Route exact path="/score" component={Score} />
-					<Route path="/matchview" component={MatchView} />
+					<Route path="/matchview/:id" component={MatchView} />
 					<Route path="/games/:id" component={Games} />
 
 				</div>

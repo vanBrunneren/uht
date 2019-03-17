@@ -101,6 +101,15 @@ class Frontpage extends Component {
     componentDidMount() {
         this.loadCategories();
         this.loadScore();
+
+        const interval = setInterval(
+            function() {
+                this.loadScore();
+            }
+            .bind(this),
+            10000
+        );
+
     }
 
 	render() {
@@ -149,8 +158,6 @@ class Frontpage extends Component {
         let table1;
         let table2;
         if(this.state.score) {
-
-            console.log(this.state.score);
 
             if(this.state.score.group1) {
                 let group1 = [];

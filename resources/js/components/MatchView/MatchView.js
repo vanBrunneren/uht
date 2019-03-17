@@ -60,7 +60,7 @@ const styles = theme => ({
     },
 
     team1: {
-        fontSize: 74,
+        fontSize: 50,
         padding: 0,
         margin: 0,
         width: '45%',
@@ -70,7 +70,7 @@ const styles = theme => ({
     },
 
     team2: {
-        fontSize: 74,
+        fontSize: 50,
         padding: 0,
         margin: 0,
         width: '45%',
@@ -149,7 +149,13 @@ const styles = theme => ({
         padding: '40px',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexDirection: 'column'
+    },
+
+    closeButton: {
+        marginTop: '20px',
+        width: '200px'
     }
 
 });
@@ -164,11 +170,11 @@ class MatchView extends Component {
         this.state = {
             game: [],
             isLoading: true,
-            minutes: 12,
+            minutes: 8,
             seconds: 0,
             finish: false,
             isTicking: false,
-            gameId: 9
+            gameId: ''
         };
 
     }
@@ -185,7 +191,7 @@ class MatchView extends Component {
         }
 
         let goalData = new FormData();
-        goalData.append("game_id", this.state.gameId);
+        goalData.append("game_id", this.state.game.id);
         goalData.append('team_id', teamId);
         goalData.append('goals', game['team_'+teamId+'_goals']);
 
@@ -200,8 +206,8 @@ class MatchView extends Component {
 
     }
 
-    loadGame() {
-        fetch('/api/games/'+this.state.gameId, {
+    loadGame(gameId) {
+        fetch('/api/games/'+gameId, {
             method: 'GET'
         })
             .then(response => response.json())
@@ -268,7 +274,7 @@ class MatchView extends Component {
     }
 
     componentDidMount() {
-        this.loadGame();
+        this.loadGame(this.props.match.params.id);
     }
 
     render() {
@@ -349,10 +355,10 @@ class MatchView extends Component {
                                 -
                             </button>
                             <button onClick={this.toggleTime.bind(this)}>
-                                {this.state.isTicking ? 'Pause' : 'Fortsetzen'}
+                                {this.state.isTicking ? 'Pause' : 'Start'}
                             </button>
-                            <button onClick={ () => this.setState({minutes: 12, seconds: 0})}>
-                                Zeit setzen
+                            <button onClick={ () => this.setState({minutes: 8, seconds: 0})}>
+                                Reset
                             </button>
                             <button onClick={ () => {
                                 if(this.state.seconds + 1 === 60) {
@@ -386,6 +392,11 @@ class MatchView extends Component {
                     </div>
                     <div className={classes.imageContainer}>
                         <img src="https://unihockey-team-brunegg.ch/wp-content/uploads/2018/07/highflyers_logo.png" className={classes.image} />
+                        <a href="/admin/games">
+                            <button className={classes.closeButton}>
+                                Spiel beenden
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
