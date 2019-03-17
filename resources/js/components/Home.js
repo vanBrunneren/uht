@@ -33,11 +33,15 @@ import { withStyles } 		from '@material-ui/core/styles';
 
 import MenuIcon 			from '@material-ui/icons/Menu';
 
-import Teams 				from './Teams/Teams';
-import Categories 			from './Categories/Categories';
+import AdminTeams 			from './AdminComponents/Teams/Teams';
+import AdminCategories 		from './AdminComponents/Categories/Categories';
+import AdminGames 			from './AdminComponents/Games/Games';
+import AdminGameBoard		from './AdminComponents/GameBoard/GameBoard';
+
+import Frontpage			from './Frontpage/Frontpage';
 import Games 				from './Games/Games';
 import MatchView			from './MatchView/MatchView';
-import GameBoard			from './GameBoard/GameBoard';
+import Score				from './Score/Score';
 
 const styles = {
 
@@ -65,26 +69,29 @@ class Home extends Component {
 
 		const { classes } = this.props;
 
+		/*
+		{
+			name: 'Kategorien',
+			link: '/admin/categories'
+		},
+		{
+			name: 'Teams',
+			link: '/admin/teams'
+		},
+		{
+			name: 'Spiele',
+			link: '/admin/games'
+		},
+		*/
+
 		let routes = [
 			{
-				name: 'Kategorien',
-				link: '/categories'
-			},
-			{
 				name: 'Teams',
-				link: '/teams'
+				link: '/'
 			},
 			{
-				name: 'Spiele',
-				link: '/games'
-			},
-			{
-				name: 'MatchView',
-				link: '/matchview'
-			},
-			{
-				name: 'GameBoard',
-				link: '/gameboard'
+				name: 'Rangliste',
+				link: '/score'
 			}
 		];
 
@@ -125,11 +132,15 @@ class Home extends Component {
 							{sideList}
 						</div>
 					</Drawer>
-					<Route path="/teams" component={Teams} />
-					<Route path="/categories" component={Categories} />
-					<Route path="/games" component={Games} />
+					<Route path="/admin/teams" component={AdminTeams} />
+					<Route path="/admin/categories" component={AdminCategories} />
+					<Route path="/admin/games" component={AdminGames} />
+					<Route path="/admin/gameboard" component={AdminGameBoard} />
+					<Route exact path="/" component={Frontpage} />
+					<Route exact path="/score" component={Score} />
 					<Route path="/matchview" component={MatchView} />
-					<Route path="/gameboard" component={GameBoard} />
+					<Route path="/games/:id" component={Games} />
+
 				</div>
 			</Router>
 		);

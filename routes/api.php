@@ -23,3 +23,5 @@ Route::apiResource('categories', 'API\CategoryController');
 Route::apiResource('games', 'API\GameController');
 
 Route::post('games/goal', 'API\GameController@goal');
+Route::get('games/getgamesbyteamid/{id}', 'API\GameController@showGamesByTeam');
+Route::get('games/getscore/{id}', 'API\GameController@getScore');
