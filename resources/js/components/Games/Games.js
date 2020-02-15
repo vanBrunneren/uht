@@ -59,8 +59,21 @@ class Games extends Component {
 		  .catch(e => console.log(e));
     }
 
+    loadAllGames() {
+        fetch('/api/games/getgamesbycategory/21', {
+			method: 'GET'
+		})
+		  .then(response => response.json())
+		  .then(jsonResponse => this.setState({games: jsonResponse, isLoading: false}))
+          .catch(e => console.log(e));
+    }
+
 	componentDidMount() {
-        this.loadGames(this.props.match.params.id)
+        if(this.props.match.params.id !== "all") {
+            this.loadGames(this.props.match.params.id)
+        } else {
+            this.loadAllGames();
+        }
 	}
 
 	render() {

@@ -68,7 +68,7 @@ class Frontpage extends Component {
 		this.state = {
 			isLoading: true,
 			categories: [],
-            selectedCategory: 1,
+            selectedCategory: 19,
             score: []
 		}
 	}

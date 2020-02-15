@@ -9,6 +9,7 @@ use App\Game;
 use App\Team;
 use DB;
 use DateTime;
+use DateInterval;
 
 class GameController extends Controller
 {
@@ -26,7 +27,7 @@ class GameController extends Controller
 
     public function store(Request $request)
     {
-        try {
+        //try {
 
             $game = new Game();
             $game->team_1_id = $request['team_1_id'];
@@ -35,6 +36,7 @@ class GameController extends Controller
             $game->team_2_goals = 0;
             $game->length = $request['length'];
             $game->start_datetime = $request['start_datetime'];
+            $game->finished = 0;
             $game->save();
 
             $games = DB::table('games')
@@ -45,9 +47,9 @@ class GameController extends Controller
                 ->get();
 
             return $games;
-        } catch (\Exception $e) {
-            return 0;
-        }
+      //  } catch (\Exception $e) {
+       //     return 0;
+      //  }
     }
 
     public function show($id)
@@ -130,7 +132,7 @@ class GameController extends Controller
 
         $categoryId = $request->id;
         $game = DB::table('games')
-            ->select(DB::raw('games.*, t1.name as team_1, t2.name as team_2'))
+            ->select(DB::raw('games.*, t1.name as t1Name, t2.name as t2Name'))
             ->join('teams as t1', 'team_1_id', 't1.id')
             ->join('teams as t2', 'team_2_id', 't2.id')
             ->where('t1.category_id', '=', $categoryId)
@@ -138,6 +140,21 @@ class GameController extends Controller
             ->orderBy('start_datetime')
             ->get();
         return $game;
+    }
+
+    public function finish(Request $request) {
+
+        $game = Game::find($request->id);
+
+        if($game->finished == 1) {
+            $game->finished = 0;
+        } else {
+            $game->finished = 1;
+        }
+        $game->save();
+        return $game;
+
+
     }
 
     public function getScore(Request $request) {
@@ -151,8 +168,7 @@ class GameController extends Controller
         foreach($teams as $team) {
 
             $games = DB::select( DB::raw('SELECT games.*, t1.name as t1Name, t2.name as t2Name from games JOIN teams t1 ON games.team_1_id = t1.id JOIN teams t2 ON games.team_2_id = t2.id
-                  WHERE (team_1_id = '.$team->id.' OR team_2_id = '.$team->id.') AND games.deleted_at IS NULL AND 
-                  start_datetime > NOW()
+                  WHERE (team_1_id = '.$team->id.' OR team_2_id = '.$team->id.') AND games.deleted_at IS NULL 
                   ORDER BY start_datetime'));
 
             $points = 0;
@@ -167,10 +183,12 @@ class GameController extends Controller
 
                 $wonAgainst = array();
 
-                $d1 = new DateTime(date('Y-m-d H:i:s'));
-                //$d1 = new DateTime("2019-03-22 21:30:00");
-                $d2 = new DateTime($game->start_datetime);
-                if($d1 > $d2) {
+                //$d1 = new DateTime(date('Y-m-d H:i:s'));
+                //$d1->add(new DateInterval('PT1H'));
+                //$d1 = new DateTime("2019-03-22 19:34:00");
+                //$d2 = new DateTime($game->start_datetime);
+
+                if($game->finished) {
 
                     if ($game->team_1_id == $team->id) {
                         if ($game->team_1_goals > $game->team_2_goals) {

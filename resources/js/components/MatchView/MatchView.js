@@ -323,7 +323,7 @@ class MatchView extends Component {
                         <div className={classes.team1Goals}>
                             <p>{this.state.game.team_1_goals}</p>
                         </div>
-                        <div className={classes.goalsPlaceholder} style={{backgroundColor: this.state.isTicking ? 'green' : 'red' }}>
+                        <div className={classes.goalsPlaceholder}>
                             <p>{time}</p>
                         </div>
                         <div className={classes.team2Goals}>
@@ -392,11 +392,6 @@ class MatchView extends Component {
                     </div>
                     <div className={classes.imageContainer}>
                         <img src="https://unihockey-team-brunegg.ch/wp-content/uploads/2018/07/highflyers_logo.png" className={classes.image} />
-                        <a href="/admin/games">
-                            <button className={classes.closeButton}>
-                                Spiel beenden
-                            </button>
-                        </a>
                     </div>
                 </div>
             </div>

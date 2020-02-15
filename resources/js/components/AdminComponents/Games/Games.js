@@ -29,6 +29,8 @@ import AddIcon 				from '@material-ui/icons/Add';
 import DeleteIcon 			from '@material-ui/icons/Delete';
 import EditIcon 			from '@material-ui/icons/Edit';
 import TouchApp 			from '@material-ui/icons/TouchApp';
+import Done 			    from '@material-ui/icons/Done';
+import Clear 			    from '@material-ui/icons/Clear';
 
 import Table 				from '@material-ui/core/Table';
 import TableBody 			from '@material-ui/core/TableBody';
@@ -74,7 +76,7 @@ class Games extends Component {
             isLoading: true,
             open: false,
             editOpen: false,
-            selectedCategory: 1,
+            selectedCategory: 19,
             teams: [],
             selectedTeam_1: '',
             selectedTeam_2: '',
@@ -196,6 +198,14 @@ class Games extends Component {
         }
     }
 
+    finishGame(gameId) {
+        this.setState({isLoading: true});
+        fetch('/api/games/finish/'+gameId, {
+			method: 'GET'
+		})
+		  .then( () => this.loadGames() )
+    }
+
     loadGames() {
         fetch('/api/games/getgamesbycategory/'+this.state.selectedCategory, {
 			method: 'GET'
@@ -306,6 +316,14 @@ class Games extends Component {
         let games = [];
 		if(this.state.games) {
 			for(let game of this.state.games) {
+
+                let finishedIcon;
+                if(game.finished) {
+                    finishedIcon = <Clear />
+                } else {
+                    finishedIcon = <Done />
+                }
+
                 games.push(
                     <TableRow key={game.id}>
                         <TableCell>{game.id}</TableCell>
@@ -313,16 +331,19 @@ class Games extends Component {
 						<TableCell>{game.length}</TableCell>
 						<TableCell>
                             <button onClick={ () => this.onGoalPress(game.id, game.team_1_goals, 1, "+")}>+</button>
-                            {game.team_1}
+                            {game.t1Name}
                             <button onClick={ () => this.onGoalPress(game.id, game.team_1_goals, 1, "-")}>-</button>
                         </TableCell>
 						<TableCell>
                             <button onClick={ () => this.onGoalPress(game.id, game.team_2_goals, 2, "+")}>+</button>
-                            {game.team_2}
+                            {game.t2Name}
                             <button onClick={ () => this.onGoalPress(game.id, game.team_2_goals, 2, "-")}>-</button>
                         </TableCell>
 						<TableCell className={classes.goalCell}>{game.team_1_goals}:{game.team_2_goals}</TableCell>
-						<TableCell>
+                        <TableCell className={classes.actionCell}>
+                            <a className={classes.deleteLink} onClick={() => this.finishGame(game.id)}>{finishedIcon}</a>
+                        </TableCell>
+                        <TableCell>
                             <a href={"/matchview/" + game.id}>
                                 <TouchApp />
                             </a>
@@ -355,6 +376,7 @@ class Games extends Component {
 							<TableCell>Team 1</TableCell>
 							<TableCell>Team 2</TableCell>
 							<TableCell>Resultat</TableCell>
+							<TableCell>Spiel beendet</TableCell>
 							<TableCell>Spiel starten</TableCell>
                             <TableCell>Bearbeiten</TableCell>
                             <TableCell>Löschen</TableCell>

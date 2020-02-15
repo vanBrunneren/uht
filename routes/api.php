@@ -26,3 +26,4 @@ Route::post('games/goal', 'API\GameController@goal');
 Route::get('games/getgamesbyteamid/{id}', 'API\GameController@showGamesByTeam');
 Route::get('games/getscore/{id}', 'API\GameController@getScore');
 Route::get('games/getgamesbycategory/{id}', 'API\GameController@getGamesByCategory');
+Route::get('games/finish/{id}', 'API\GameController@finish');
