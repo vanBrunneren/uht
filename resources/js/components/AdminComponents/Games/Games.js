@@ -37,6 +37,7 @@ import TableBody 			from '@material-ui/core/TableBody';
 import TableCell 			from '@material-ui/core/TableCell';
 import TableHead 			from '@material-ui/core/TableHead';
 import TableRow 			from '@material-ui/core/TableRow';
+import { ArrowForward } from '@material-ui/icons';
 
 const styles = theme => ({
 
@@ -76,7 +77,7 @@ class Games extends Component {
             isLoading: true,
             open: false,
             editOpen: false,
-            selectedCategory: 19,
+            selectedCategory: 32,
             teams: [],
             selectedTeam_1: '',
             selectedTeam_2: '',
@@ -105,6 +106,7 @@ class Games extends Component {
         gameFormData.append("team_2_id", this.state.selectedTeam_2);
         gameFormData.append("length", this.state.gameLength);
         gameFormData.append("start_datetime", this.state.gameDate);
+        gameFormData.append("category_id", this.state.selectedCategory)
 
         fetch('/api/games', {
             method: 'POST',
@@ -235,7 +237,7 @@ class Games extends Component {
                     category: jsonResponse.category,
                     isLoading: false,
                     gameDate: jsonResponse.category.start_datetime,
-                    gameLength: "00:12:00"
+                    gameLength: "00:08:00"
                 });
             })
             .catch(e => console.log(e));
@@ -482,7 +484,7 @@ class Games extends Component {
                                 id="time"
                                 label="Länge (hh:mm:ss)"
                                 type="time"
-                                defaultValue="00:12:00"
+                                defaultValue="00:10:00"
                                 className={classes.textField}
                                 InputLabelProps={{
                                       shrink: true,

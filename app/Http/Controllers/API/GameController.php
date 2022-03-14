@@ -27,29 +27,27 @@ class GameController extends Controller
 
     public function store(Request $request)
     {
-        //try {
 
-            $game = new Game();
-            $game->team_1_id = $request['team_1_id'];
-            $game->team_2_id = $request['team_2_id'];
-            $game->team_1_goals = 0;
-            $game->team_2_goals = 0;
-            $game->length = $request['length'];
-            $game->start_datetime = $request['start_datetime'];
-            $game->finished = 0;
-            $game->save();
+        $game = new Game();
+        $game->team_1_id = $request['team_1_id'];
+        $game->team_2_id = $request['team_2_id'];
+        $game->team_1_goals = 0;
+        $game->team_2_goals = 0;
+        $game->length = $request['length'];
+        $game->start_datetime = $request['start_datetime'];
+        $game->finished = 0;
+        $game->save();
 
-            $games = DB::table('games')
-                ->select(DB::raw('games.*, t1.name as team_1, t2.name as team_2'))
-                ->join('teams as t1', 'team_1_id', 't1.id')
-                ->join('teams as t2', 'team_2_id', 't2.id')
-                ->whereNull('games.deleted_at')
-                ->get();
+        $games = DB::table('games')
+            ->select(DB::raw('games.*, t1.name as team_1, t2.name as team_2'))
+            ->join('teams as t1', 'team_1_id', 't1.id')
+            ->join('teams as t2', 'team_2_id', 't2.id')
+            ->where('t1.category_id', '=', $request['category_id'])
+            ->whereNull('games.deleted_at')
+            ->get();
 
-            return $games;
-      //  } catch (\Exception $e) {
-       //     return 0;
-      //  }
+        return $games;
+            
     }
 
     public function show($id)

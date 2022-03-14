@@ -13,6 +13,9 @@ import React, { Component } from 'react';
 
 import Countdown from 'react-countdown-now';
 
+import ArrowForward from '@material-ui/icons/ArrowForward';
+import ArrowBack from '@material-ui/icons/ArrowBack';
+
 import CircularProgress 	from '@material-ui/core/CircularProgress';
 import { withStyles }       from '@material-ui/core/styles';
 
@@ -392,6 +395,10 @@ class MatchView extends Component {
                     </div>
                     <div className={classes.imageContainer}>
                         <img src="https://unihockey-team-brunegg.ch/wp-content/uploads/2018/07/highflyers_logo.png" className={classes.image} />
+                        <div style={{ display: "flex", flexDirection: "row" }}>
+                            <a href={`/matchview/${this.state.game.id -1}`}><ArrowBack /></a>
+                            <a href={`/matchview/${this.state.game.id + 1}`}><ArrowForward /></a>
+                        </div>
                     </div>
                 </div>
             </div>
